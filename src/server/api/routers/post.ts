@@ -32,9 +32,24 @@ export const postRouter = createTRPCRouter({
       });
     }),
 
-  getLatest: publicProcedure.query(({ ctx }) => {
-    return ctx.db.post.findFirst({
-      orderBy: { createdAt: "desc" },
-    });
-  }),
+  getDetailBlog: publicProcedure
+    .input(z.object({ id: z.number() }))
+    // NOTE: queryは参照系の時に使う
+    .query(async ({ input }) => {
+      return db.post.findUnique({
+        where: {
+          id: input.id,
+        },
+      });
+    }),
+
+  deletedBlog: publicProcedure
+    .input(z.object({ id: z.number() }))
+    .mutation(async ({ input }) => {
+      return db.post.delete({
+        where: {
+          id: input.id,
+        },
+      });
+    }),
 });
